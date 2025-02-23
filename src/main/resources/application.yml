@@ -1,0 +1,106 @@
+micronaut:
+  application:
+    name: ticketleader
+  router:
+    static-resources:
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      swagger-ui:
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /swagger-ui/**
+  server:
+    port: 8080
+    cors:
+      enabled: true
+  netty:
+    event-loops:
+      default:
+        num-threads: 8
+security:
+  authentication: true
+  token:
+    jwt:
+      signatures:
+        secret:
+          generator:
+            secret: "changeThisToASecureSecretInProduction"
+            jws-algorithm: HS256
+      generator:
+        access-token:
+          expiration: 3600
+      prefix: Bearer
+      enabled: true
+  security-filter-order:
+    - pattern: /swagger/**
+      order: -100
+    - pattern: /swagger-ui/**
+      order: -100
+
+datasources:
+  default:
+    url: jdbc:postgresql://localhost:5432/ticketleader
+    username: ticketleader
+    password: ticketleader
+    driver-class-name: org.postgresql.Driver
+    db-type: postgres
+    dialect: POSTGRES
+    maximum-pool-size: 10
+    minimum-idle: 1
+    idle-timeout: 300000
+
+redis:
+  uri: redis://localhost
+  io-thread-pool-size: 5
+  computation-thread-pool-size: 4
+
+kafka:
+  streams:
+    enabled: false
+  bootstrap:
+    servers: "localhost:9092"
+  consumers:
+    default:
+      session:
+        timeout:
+          ms: 30000
+app:
+  reservation:
+    lock-duration-seconds: 300
+    lock-timeout-ms: 5000
+  security:
+    password-encoder:
+      secret: "changeThisToASecureSecretInProduction"
+      iterations: 10000
+
+logger:
+  levels:
+    com.ticketleader: DEBUG
+    io.micronaut.security: DEBUG
+
+flyway:
+  datasources:
+    default:
+      enabled: true
+      locations: classpath:db/migration
+      baselineOnMigrate: true
+      migrateOnStart: true
+
+swagger-ui:
+  enabled: true
+  theme: flattop
+  paths: swagger
+  layout: BaseLayout
+  deepLinking: true
+  displayRequestDuration: true
+
+redoc:
+  enabled: false
+
+openapi-explorer:
+  enabled: false
+rapidoc:
+  enabled: false
+  bg-color: "#14191f"
+  text-color: "#aec2e0"
+  sort-endpoints-by: method

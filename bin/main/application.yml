@@ -1,0 +1,93 @@
+micronaut:
+  application:
+    name: ticketleader
+  router:
+    static-resources:
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      swagger-ui:
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /swagger-ui/**
+  security:
+    authentication: cookie
+    endpoints:
+      login:
+        enabled: true
+      oauth:
+        enabled: true
+    redirect:
+      login-success: /
+      login-failure: /login/authFailed
+    token:
+      jwt:
+        signatures:
+          secret:
+            generator:
+              secret: ${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}
+  server:
+    port: ${SERVER_PORT:8080}
+    cors:
+      enabled: true
+  netty:
+    event-loops:
+      default:
+        num-threads: 8
+
+datasources:
+  default:
+    url: ${JDBC_URL:jdbc:postgresql://localhost:5432/postgres}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+    db-type: postgres
+    dialect: POSTGRES
+    schema-generate: CREATE_DROP
+    maximum-pool-size: 10
+    minimum-idle: 1
+    idle-timeout: 300000
+
+redis:
+  uri: ${REDIS_URI:redis://localhost}
+  io-thread-pool-size: 5
+  computation-thread-pool-size: 4
+
+kafka:
+  bootstrap:
+    servers: ${KAFKA_SERVERS:localhost:9092}
+  consumers:
+    default:
+      session:
+        timeout:
+          ms: 30000
+
+app:
+  reservation:
+    lock-duration-seconds: ${RESERVATION_LOCK_DURATION:300}
+    lock-timeout-ms: ${RESERVATION_LOCK_TIMEOUT:5000}
+  security:
+    password-encoder:
+      secret: ${PASSWORD_ENCODER_SECRET:changeThisToASecureSecretInProduction}
+      iterations: 10000
+
+logger:
+  levels:
+    com.ticketleader: DEBUG
+    io.micronaut.security: DEBUG
+
+swagger-ui:
+  enabled: true
+  theme: flattop
+  paths: swagger
+  layout: BaseLayout
+  deepLinking: true
+  displayRequestDuration: true
+redoc:
+  enabled: false
+openapi-explorer:
+  enabled: false
+rapidoc:
+  enabled: false
+  bg-color: "#14191f"
+  text-color: "#aec2e0"
+  sort-endpoints-by: method 
